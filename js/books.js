@@ -25,8 +25,8 @@ const DEPARTMENT_BOOKS = {
             title: "E-Granthalaya User Manual",
             author: 'System Admin',
             description: 'Official user guide for the E-Granthalaya Library Management System. Learn how to borrow, return, and read books.',
-            // Minimal valid PDF base64 with Data URI prefix
-            fileData: 'data:application/pdf;base64,JVBERi0xLjcKCjEgMCBvYmogICUgZW50cnkgcG9pbnQKPDwKICAvVHlwZSAvQ2F0YWxvZwogIC9QYWdlcyAyIDAgUgo+PgplbmRvYmoKCjIgMCBvYmogICUgcGFnZXM9MQo8XAogIC9UeXBlIC9QYWdlcwogIC9LaWRzIFsgMyAwIFIgXQogIC9Db3VudCAxCj4+CmVuZG9iagoKMyAwIG9iaiAgJSBwYWdlPTEKPDwKICAvVHlwZSAvUGFnZQogIC9QYXJlbnQgMiAwIFIKICAvTWVkaWFCb3ggWyAwIDAgNTAwIDgwMCBdCiAgL0NvbnRlbnRzIDQgMCBSCj4+CmVuZG9iagoKNCAwIG9iagogIDw8IC9MZW5ndGggNTAgPj4Kc3RyZWFtCkJVCjEuMDAwIDAuMDAwIDAuMDAwIHJnCiBTZwovRjEgMzYgVGYKMSAwIDAgMSAxMCA3MDAgVG0KKEUtR3JhbnRoYWxheWEgVXNlciBNYW51YWwpIFRqCkVUCmVuZHN0cmVhbQplbmRvYmoKCnhyZWYKMCA1CjAwMDAwMDAwMDAgNjU1MzUgZgowMDAwMDAwMDEwIDAwMDAwIG4KMDAwMDAwMDA2MCAwMDAwMCBuCjAwMDAwMDAxNTcgMDAwMDAgbgowMDAwMDAwMjcxIDAwMDAwIG4KdHJhaWxlcgo8XAogIC9TaXplIDUKICAvUm9vdCAxIDAgUgo+PgpzdGFydHhyZWYKMzcyCiUlRU9GCg==',
+            // Valid Blank Page PDF base64 with Data URI prefix
+            fileData: 'data:application/pdf;base64,JVBERi0xLjAKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqIDIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iaiAzIDAgb2JqPDwvVHlwZS9QYWdlL01lZGlhQm94WzAgMCA1OTUgODQyXS9QYXJlbnQgMiAwIFIvUmVzb3VyY2VzPDw+Pj4+ZW5kb2JqIHhyZWYgMCA0IDAwMDAwMDAwMDAgNjU1MzUgZiAwMDAwMDAwMDEwIDAwMDAwIG4gMDAwMDAwMDAwNjAgMDAwMDAgbiAwMDAwMDAwMTE3IDAwMDAwIG4gdHJhaWxlcjw8L1NpemUgNC9Sb290IDEgMCBSPj5zdGFydHhyZWYKMTc4CiUlRU9GCg==',
             fileType: 'application/pdf'
         },
         { title: "Programming With 'C'", author: 'Gottfried' },
