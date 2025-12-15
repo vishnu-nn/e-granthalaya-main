@@ -1314,12 +1314,12 @@ async function openBookReader(bookId, recordId) {
                             </div>
                         </a>
                         
-                        <a href="https://www.pdfdrive.com/search?q=${titleQuery}" target="_blank"
+                        <a href="https://www.google.com/search?q=${titleQuery}+filetype:pdf" target="_blank"
                            style="display: flex; align-items: center; gap: 10px; padding: 15px; background: #fff; border-radius: 8px; text-decoration: none; color: #1a1a2e; border: 1px solid #e0e0e0; transition: all 0.3s;">
-                            <span style="font-size: 1.5rem;">📄</span>
+                            <span style="font-size: 1.5rem;">🔎</span>
                             <div>
-                                <strong>PDF Drive</strong>
-                                <p style="font-size: 0.85rem; color: #666; margin: 0;">Search for PDF versions</p>
+                                <strong>Google PDF Search</strong>
+                                <p style="font-size: 0.85rem; color: #666; margin: 0;">Direct search for PDF files</p>
                             </div>
                         </a>
                         
@@ -1452,12 +1452,12 @@ async function viewBookDetails(bookId) {
                             </div>
                         </a>
                         
-                        <a href="https://www.pdfdrive.com/search?q=${titleQuery}" target="_blank"
+                        <a href="https://www.google.com/search?q=${titleQuery}+filetype:pdf" target="_blank"
                            style="display: flex; align-items: center; gap: 10px; padding: 15px; background: #fff; border-radius: 8px; text-decoration: none; color: #1a1a2e; border: 1px solid #e0e0e0; transition: all 0.3s;">
-                            <span style="font-size: 1.5rem;">📄</span>
+                            <span style="font-size: 1.5rem;">🔎</span>
                             <div>
-                                <strong>PDF Drive</strong>
-                                <p style="font-size: 0.85rem; color: #666; margin: 0;">Search for PDF versions</p>
+                                <strong>Google PDF Search</strong>
+                                <p style="font-size: 0.85rem; color: #666; margin: 0;">Direct search for PDF files</p>
                             </div>
                         </a>
                         
