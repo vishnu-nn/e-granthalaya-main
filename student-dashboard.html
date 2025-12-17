@@ -230,6 +230,17 @@
                 // Update active tab content
                 document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
                 document.getElementById(tab + 'Tab').classList.add('active');
+
+                // Reload data when switching to specific tabs
+                if (tab === 'borrowed') {
+                    loadBorrowedBooks();
+                } else if (tab === 'history') {
+                    loadStudentHistoryTimeline();
+                } else if (tab === 'profile') {
+                    loadStudentProfile();
+                } else if (tab === 'books') {
+                    loadBooksGrid(false);
+                }
             });
         });
 
