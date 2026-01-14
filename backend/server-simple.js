@@ -6,7 +6,7 @@ const path = require('path');
 const crypto = require('crypto');
 
 // Configuration
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const FRONTEND_DIR = path.join(__dirname, '../e-granthalaya-main');
 
 // Simple in-memory database (will be replaced with file-based storage)
