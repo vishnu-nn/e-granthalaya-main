@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+generate_books.py
+
+# Excel and data files
+excel/
+~$*.xlsx
+
+# Large folders (books PDFs)
+a/
+books/
+*.pdf
+
+# Temporary files
+*.tmp
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

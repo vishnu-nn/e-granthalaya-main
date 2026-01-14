@@ -1,0 +1,16 @@
+{
+  "name": "e-granthalaya-backend",
+  "version": "1.0.0",
+  "description": "Backend server for e-Granthalaya Library Management System - Pure JS version",
+  "main": "server-simple.js",
+  "scripts": {
+    "start": "node server-simple.js"
+  },
+  "keywords": [
+    "library",
+    "management"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {}
+}

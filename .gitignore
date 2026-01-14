@@ -1,0 +1,33 @@
+# Ignore node_modules
+node_modules/
+npm-debug.log
+package-lock.json
+
+# Ignore database files
+database/
+*.db
+
+# Ignore environment files
+.env
+.env.local
+
+# Ignore uploads
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# Ignore logs
+*.log
+logs/
+
+# Ignore temporary files
+*.tmp
+*.temp
