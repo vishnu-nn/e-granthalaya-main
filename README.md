@@ -1,157 +1,65 @@
 # e-Granthalaya - Digital Library Management System
 
+[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://school-of-mines-kgf.github.io/e-granthalaya/)
+[![GitHub](https://img.shields.io/badge/github-repo-blue)](https://github.com/school-of-mines-kgf/e-granthalaya)
+
 A full-stack MVC library management system built with Node.js backend and vanilla JavaScript frontend.
 
-## 🌟 Features
+## 🌐 Live Demo
 
-- **Admin Panel**: Book management, student tracking, borrowing records
-- **Student Portal**: Browse books, borrow/return, view history
-- **Real-time Sync**: Books sync across all users automatically
-- **Secure Authentication**: Encrypted passwords, session management
-- **Department-wise Organization**: Computer Science, Mechanical, Mining
+**Frontend**: https://school-of-mines-kgf.github.io/e-granthalaya/
 
-## 🚀 Live Demo
+**Note**: The live demo shows the frontend interface. For full functionality (login, book management), run locally with the backend server.
 
-- **Frontend**: [https://your-app.vercel.app](https://your-app.vercel.app)
-- **Backend API**: [https://your-backend.railway.app](https://your-backend.railway.app)
-
-## 📋 Prerequisites
-
-- Node.js (v14 or higher)
-- Git
-
-## 🛠️ Local Setup
-
-### 1. Clone the repository
+## 🚀 Quick Start (Local)
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/e-granthalaya.git
+# Clone repository
+git clone https://github.com/school-of-mines-kgf/e-granthalaya.git
 cd e-granthalaya
-```
 
-### 2. Install dependencies
-
-```bash
+# Start backend server
 cd backend
-npm install
-```
-
-### 3. Start the backend server
-
-```bash
 node server-simple.js
-```
 
-Server runs on `http://localhost:3000`
-
-### 4. Access the application
-
-- **Main Page**: http://localhost:3000
-- **Admin Login**: http://localhost:3000/admin-login.html (Password: 112233)
-- **Student Login**: http://localhost:3000/student-login.html
-
-## 📁 Project Structure
-
-```
-e-granthalaya-main/
-├── e-granthalaya-main/        # Frontend files
-│   ├── index.html
-│   ├── admin-dashboard.html
-│   ├── student-dashboard.html
-│   ├── css/
-│   ├── js/
-│   │   ├── api.js            # API client
-│   │   ├── api-bridge.js     # Auto-sync
-│   │   ├── app.js
-│   │   └── ...
-│   └── assets/
-├── backend/                   # Backend server
-│   ├── server-simple.js      # Main server
-│   └── package.json
-└── README.md
+# Open browser to http://localhost:3000
 ```
 
 ## 🔑 Default Credentials
 
-**Admin:**
-- Password: `112233`
+- **Admin Password**: `112233`
+- **Students**: Register on the student login page
 
-**Student:**
-- Register your own account at student-login.html
+## 🌟 Features
 
-## 🌐 Deployment
+- ✅ Admin Panel for book management
+- ✅ Student Portal for browsing and borrowing
+- ✅ Real-time book synchronization
+- ✅ Department-wise organization
+- ✅ Borrowing history tracking
+- ✅ Secure authentication
 
-### Deploy Backend (Railway/Render)
+## 📚 Technology Stack
 
-1. Create account on [Railway.app](https://railway.app) or [Render.com](https://render.com)
-2. Create new project from GitHub repo
-3. Set root directory to `backend`
-4. Set build command: `npm install`
-5. Set start command: `node server-simple.js`
-6. Deploy!
+**Frontend:**
+- HTML5, CSS3, JavaScript (Vanilla)
+- Responsive design
 
-### Deploy Frontend (Vercel/Netlify)
+**Backend:**
+- Node.js
+- Express.js
+- SQLite-ready database structure
+- RESTful API
 
-1. Create account on [Vercel](https://vercel.com) or [Netlify](https://netlify.com)
-2. Import GitHub repository
-3. Set root directory to `e-granthalaya-main`
-4. Deploy!
-5. Update `js/api.js` with your backend URL
+## 📖 Documentation
 
-## 📝 API Endpoints
-
-- `POST /api/auth/admin/login` - Admin authentication
-- `POST /api/auth/student/register` - Student registration
-- `POST /api/auth/student/login` - Student authentication
-- `GET /api/books` - Get all books
-- `POST /api/books` - Add new book
-- `POST /api/borrow` - Borrow a book
-- `GET /api/borrow/all` - Get borrowing history
-
-## 🎯 Features in Detail
-
-### For Students:
-- Browse department-specific books
-- Preview book details
-- Borrow and return books
-- Track borrowing history
-- Auto-sync book updates
-
-### For Admins:
-- Add/edit/delete books
-- View all students
-- Track all borrowing records
-- Manage book inventory
-- Department-wise organization
-
-## 🔒 Security
-
-- Passwords hashed using SHA-256
-- Session-based authentication
-- CORS enabled for API
-- Input validation
-
-## 🛣️ Roadmap
-
-- [ ] PDF upload support
-- [ ] SQLite database persistence
-- [ ] Email notifications
-- [ ] Advanced search & filters
-- [ ] Book reservations
-- [ ] Due date reminders
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+See the [walkthrough guide](./walkthrough.md) for detailed setup and deployment instructions.
 
 ## 📄 License
 
 MIT License
 
-## 👨‍💻 Author
+---
 
-Your Name
-
-## 🙏 Acknowledgments
-
-Built for School of Mines Digital Library Management
+**Built for**: School of Mines KGF  
+**Project**: Digital Library Management System
