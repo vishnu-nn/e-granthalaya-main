@@ -1,16 +1,20 @@
 {
   "name": "e-granthalaya-backend",
   "version": "1.0.0",
-  "description": "Backend server for e-Granthalaya Library Management System - Pure JS version",
+  "description": "Backend server for e-Granthalaya Library Management System",
   "main": "server-simple.js",
   "scripts": {
-    "start": "node server-simple.js"
+    "start": "node server-simple.js",
+    "dev": "node server-simple.js"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   },
   "keywords": [
     "library",
-    "management"
+    "management",
+    "education"
   ],
-  "author": "",
-  "license": "MIT",
-  "dependencies": {}
+  "author": "School of Mines KGF",
+  "license": "MIT"
 }
