@@ -1,7 +1,7 @@
 // API Client - Frontend interface to backend server
 // Replaces IndexedDB with server API calls
 
-const API_BASE = '/api';
+const API_BASE = 'http://localhost:3000/api';
 
 // Store session data
 let currentSession = {
