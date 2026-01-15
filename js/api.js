@@ -1,7 +1,7 @@
 // API Client - Frontend interface to backend server
 // Replaces IndexedDB with server API calls
 
-const API_BASE = 'https://e-granthalaya-production.up.railway.app/api';
+const API_BASE = '/api';
 
 // Store session data
 let currentSession = {
