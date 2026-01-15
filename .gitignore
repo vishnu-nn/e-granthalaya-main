@@ -1,33 +1,28 @@
-# Ignore node_modules
+# Dependencies
 node_modules/
-npm-debug.log
-package-lock.json
 
-# Ignore database files
-database/
-*.db
+# Python
+__pycache__/
+*.pyc
+generate_books.py
 
-# Ignore environment files
-.env
-.env.local
+# Excel and data files
+excel/
+~$*.xlsx
 
-# Ignore uploads
-backend/uploads/*
-!backend/uploads/.gitkeep
+# Large folders (books PDFs)
+a/
+books/
+*.pdf
 
-# Ignore OS files
-.DS_Store
-Thumbs.db
+# Temporary files
+*.tmp
+*.log
 
-# Ignore IDE files
+# IDE
 .vscode/
 .idea/
-*.sublime-*
 
-# Ignore logs
-*.log
-logs/
-
-# Ignore temporary files
-*.tmp
-*.temp
+# OS files
+.DS_Store
+Thumbs.db

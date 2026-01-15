@@ -204,14 +204,19 @@
         </div>
     </div>
 
+    <script src="js/api.js"></script>
+    <script src="js/api-bridge.js"></script>
     <script src="js/database.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/books.js"></script>
     <script src="js/app.js"></script>
     <script>
-        // Check if student is logged in
-        if (!isStudentLoggedIn()) {
+        // Check if student is logged in using API
+        if (!API.isStudent()) {
+            console.log('Not logged in as student, redirecting...');
             window.location.href = 'student-login.html';
+        } else {
+            console.log('✅ Student authenticated');
         }
 
         // Initialize dashboard

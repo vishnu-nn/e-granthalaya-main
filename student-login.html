@@ -23,6 +23,11 @@
 
             <form id="studentLoginForm" class="login-form">
                 <div class="form-group">
+                    <label for="studentId">Student ID</label>
+                    <input type="text" id="studentId" name="studentId" placeholder="Enter your student ID" required>
+                </div>
+
+                <div class="form-group">
                     <label for="name">Full Name</label>
                     <input type="text" id="name" name="name" placeholder="Enter your full name" required>
                 </div>
@@ -30,6 +35,11 @@
                 <div class="form-group">
                     <label for="email">Email Address</label>
                     <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
                 </div>
 
                 <div class="form-group">
@@ -44,9 +54,13 @@
 
                 <div id="errorMessage" class="error-message"></div>
 
-                <button type="submit" class="btn btn-primary">
-                    <span>Login as Student</span>
+                <button type="submit" id="submitBtn" class="btn btn-primary">
+                    <span>Register / Login</span>
                 </button>
+
+                <p style="text-align: center; margin-top: 15px; font-size: 0.9rem; color: #666;">
+                    First time? Your account will be created automatically.
+                </p>
             </form>
         </div>
     </div>
@@ -57,27 +71,53 @@
         <div class="circle circle-3"></div>
     </div>
 
-    <script src="js/database.js"></script>
-    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
     <script>
-        // Initialize database first
-        window.dbModule.initDatabase().then(() => {
-            console.log('Database ready');
-        });
-
         document.getElementById('studentLoginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
+
+            const studentId = document.getElementById('studentId').value;
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
             const department = document.getElementById('department').value;
 
-            const result = await studentLogin(name, email, department);
+            const errorDiv = document.getElementById('errorMessage');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Disable button during request
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Please wait...';
+
+            // First, try to login
+            let result = await API.studentLogin(studentId, password);
+
+            if (!result.success) {
+                // Login failed, try to register
+                console.log('Login failed, attempting registration...');
+                result = await API.studentRegister({
+                    studentId: studentId,
+                    name: name,
+                    email: email,
+                    password: password,
+                    department: department
+                });
+
+                if (result.success) {
+                    // Registration successful, now login
+                    result = await API.studentLogin(studentId, password);
+                }
+            }
+
+            // Re-enable button
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<span>Register / Login</span>';
 
             if (result.success) {
+                console.log('✅ Student logged in successfully');
                 window.location.href = 'student-dashboard.html';
             } else {
-                const errorDiv = document.getElementById('errorMessage');
-                errorDiv.textContent = result.message;
+                errorDiv.textContent = result.message || 'Login failed. Please check your credentials.';
                 errorDiv.style.display = 'block';
             }
         });

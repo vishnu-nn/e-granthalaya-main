@@ -14,6 +14,9 @@ async function initAdminDashboard() {
     await loadBorrowingRecords();
     await loadStudentsList();
     await loadDeletedBooks();
+
+    // Initialize file upload for Add Books tab
+    initAddBooksTab();
 }
 
 // Load books grid
@@ -60,6 +63,9 @@ async function loadBooksGrid(isAdmin = false) {
                     `;
                     actionButton = `
                         <div class="book-actions">
+                            <button class="btn btn-secondary" style="margin-bottom: 8px;" onclick="viewBookDetails(${book.id})">
+                                👁️ Preview Book
+                            </button>
                             <button class="btn btn-success" onclick="showReturnModal(${book.id}, ${borrower.id})">
                                 Return Book
                             </button>
@@ -68,6 +74,9 @@ async function loadBooksGrid(isAdmin = false) {
                 } else {
                     actionButton = `
                         <div class="book-actions">
+                            <button class="btn btn-secondary" style="margin-bottom: 8px;" onclick="viewBookDetails(${book.id})">
+                                👁️ Preview Book
+                            </button>
                             <button class="btn btn-secondary" disabled>
                                 Not Available
                             </button>
@@ -77,6 +86,9 @@ async function loadBooksGrid(isAdmin = false) {
             } else {
                 actionButton = `
                     <div class="book-actions">
+                        <button class="btn btn-secondary" style="margin-bottom: 8px;" onclick="viewBookDetails(${book.id})">
+                            👁️ Preview Book
+                        </button>
                         <button class="btn btn-primary" onclick="showBorrowModal(${book.id})">
                             Borrow Book
                         </button>
@@ -1513,3 +1525,27 @@ async function viewBookDetails(bookId) {
 
     modal.classList.add('active');
 }
+
+// ===== Cross-Tab Synchronization =====
+// Listen for book list updates from other tabs (e.g., when admin adds a book)
+window.addEventListener('storage', async function(e) {
+    if (e.key === 'bookListUpdated') {
+        console.log('Book list updated in another tab, refreshing...');
+        
+        // Check if we're on a student or admin dashboard
+        const isAdmin = typeof isAdminLoggedIn === 'function' && isAdminLoggedIn();
+        const isStudent = typeof isStudentLoggedIn === 'function' && isStudentLoggedIn();
+        
+        if (isStudent || isAdmin) {
+            // Reload the books grid
+            await loadBooksGrid(isAdmin);
+            
+            // Show notification to user
+            const notification = document.createElement('div');
+            notification.style.cssText = 'position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 10px; color: white; font-weight: 500; z-index: 9999; background: linear-gradient(135deg, #667eea, #764ba2);';
+            notification.textContent = '📚 Book list updated! New books available.';
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 4000);
+        }
+    }
+});
