@@ -3,6 +3,13 @@
 [![Live Demo](https://img.shields.io/badge/demo-live-success)](https://school-of-mines-kgf.github.io/e-granthalaya/)
 [![GitHub](https://img.shields.io/badge/github-repo-blue)](https://github.com/school-of-mines-kgf/e-granthalaya)
 
+# 🚀 One-Click Deploy
+
+Get your own public URL running in minutes:
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/school-of-mines-kgf/e-granthalaya)
+
+
 A full-stack MVC library management system built with Node.js backend and vanilla JavaScript frontend.
 
 ## 🌐 Live Demo
