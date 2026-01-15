@@ -1,7 +1,8 @@
 // API Client - Frontend interface to backend server
 // Replaces IndexedDB with server API calls
 
-const API_BASE = 'http://localhost:3000/api';
+// Use relative path for production, localhost for local dev if needed (though relative works for both if served by same server)
+const API_BASE = '/api';
 
 // Store session data - restore from localStorage on load
 let currentSession = {
