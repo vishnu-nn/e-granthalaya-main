@@ -52,6 +52,7 @@ function loadDatabase() {
 
 // Save database to file
 function saveDatabase() {
+    if (process.env.VERCEL) return; // Skip write on Vercel
     try {
         // Ensure database directory exists
         const dbDir = path.dirname(DB_FILE);
@@ -74,6 +75,7 @@ function saveDatabase() {
 
 // Save books to separate file
 function saveBooksDatabase() {
+    if (process.env.VERCEL) return; // Skip write on Vercel
     try {
         const booksData = {
             books: db.books
@@ -152,7 +154,7 @@ function serveFile(res, filePath) {
 
 // Create HTTP server
 const server = http.createServer((req, res) => {
-    const url = req.url;
+    const url = req.url.split('?')[0];
     const method = req.method;
 
     console.log(`${method} ${url}`);
