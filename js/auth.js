@@ -119,9 +119,14 @@ function logout() {
     window.location.href = 'index.html';
 }
 
-// Get all registered students from database
+// Get all registered students from server database
 async function getAllStudents() {
     try {
+        // Use the server API to get students
+        if (window.API && window.API.getStudents) {
+            return await window.API.getStudents();
+        }
+        // Fallback to local database
         return await window.dbModule.dbGetAll('students');
     } catch (error) {
         console.error('Error getting students:', error);

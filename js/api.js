@@ -3,11 +3,32 @@
 
 const API_BASE = 'http://localhost:3000/api';
 
-// Store session data
+// Store session data - restore from localStorage on load
 let currentSession = {
-    sessionId: null,
+    sessionId: localStorage.getItem('sessionId'),
     user: null
 };
+
+// Restore user data from localStorage on load
+(function restoreSession() {
+    const sessionId = localStorage.getItem('sessionId');
+    const userType = localStorage.getItem('userType');
+    const userData = localStorage.getItem('userData');
+
+    if (sessionId && userType) {
+        currentSession.sessionId = sessionId;
+        if (userData) {
+            try {
+                currentSession.user = JSON.parse(userData);
+            } catch (e) {
+                console.warn('Could not parse userData from localStorage');
+            }
+        } else if (userType === 'admin') {
+            currentSession.user = { type: 'admin' };
+        }
+        console.log('✅ Session restored from localStorage:', userType);
+    }
+})();
 
 const API = {
     // ===== Books =====
@@ -139,6 +160,18 @@ const API = {
     getCurrentUser() {
         const userData = localStorage.getItem('userData');
         return userData ? JSON.parse(userData) : null;
+    },
+
+    // Get all registered students
+    async getStudents() {
+        try {
+            const response = await fetch(`${API_BASE}/students`);
+            const data = await response.json();
+            return data.success ? data.data : [];
+        } catch (error) {
+            console.error('Error fetching students:', error);
+            return [];
+        }
     },
 
     logout() {

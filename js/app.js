@@ -768,21 +768,25 @@ async function addBookToLibrary() {
             addedBy: 'admin'
         };
 
-        // Add to database
-        await window.dbModule.dbAdd('books', newBook);
+        // Add to server database (permanent storage)
+        const result = await API.addBook(newBook);
 
-        // Show success message
-        showAddBookMessage(`✅ "${title}" has been added to the library successfully!`, 'success');
+        if (result.success) {
+            // Show success message
+            showAddBookMessage(`✅ "${title}" has been added to the library permanently!`, 'success');
 
-        // Reset form
-        removeSelectedFile();
+            // Reset form
+            removeSelectedFile();
 
-        // Refresh books grid and recently added
-        await loadBooksGrid(true);
-        await loadRecentlyAddedBooks();
+            // Refresh books grid and recently added
+            await loadBooksGrid(true);
+            await loadRecentlyAddedBooks();
 
-        // Show notification
-        showNotification(`Book "${title}" added to library!`, 'success');
+            // Show notification
+            showNotification(`Book "${title}" added to library!`, 'success');
+        } else {
+            showAddBookMessage(result.message || 'Failed to add book. Please try again.', 'error');
+        }
 
     } catch (error) {
         console.error('Error adding book:', error);
@@ -1528,18 +1532,18 @@ async function viewBookDetails(bookId) {
 
 // ===== Cross-Tab Synchronization =====
 // Listen for book list updates from other tabs (e.g., when admin adds a book)
-window.addEventListener('storage', async function(e) {
+window.addEventListener('storage', async function (e) {
     if (e.key === 'bookListUpdated') {
         console.log('Book list updated in another tab, refreshing...');
-        
+
         // Check if we're on a student or admin dashboard
         const isAdmin = typeof isAdminLoggedIn === 'function' && isAdminLoggedIn();
         const isStudent = typeof isStudentLoggedIn === 'function' && isStudentLoggedIn();
-        
+
         if (isStudent || isAdmin) {
             // Reload the books grid
             await loadBooksGrid(isAdmin);
-            
+
             // Show notification to user
             const notification = document.createElement('div');
             notification.style.cssText = 'position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 10px; color: white; font-weight: 500; z-index: 9999; background: linear-gradient(135deg, #667eea, #764ba2);';

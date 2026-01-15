@@ -103,44 +103,25 @@ const DEPARTMENT_BOOKS = {
     ]
 };
 
-// Initialize books in database
+// Initialize books in database - DISABLED to allow manual uploads only
 async function initializeBooks() {
     try {
         const existingBooks = await window.dbModule.dbGetAll('books');
-
-        // Always initialize if no books exist
-        if (existingBooks.length === 0) {
-            console.log('No books found, initializing sample books...');
-
-            let bookId = 1;
-
-            for (const [department, books] of Object.entries(DEPARTMENT_BOOKS)) {
-                for (const book of books) {
-                    await window.dbModule.dbAdd('books', {
-                        id: bookId++,
-                        title: book.title,
-                        author: book.author,
-                        image: generateBookCover(book.title, department),
-                        department: department,
-                        description: book.description || `A comprehensive book on ${book.title} for ${department} students.`,
-                        fileData: book.fileData || null,
-                        fileType: book.fileType || null,
-                        addedAt: new Date().toISOString()
-                    });
-                }
-            }
-            console.log('Books initialized in database with SVG covers');
-        } else {
-            console.log(`Found ${existingBooks.length} existing books in database`);
-        }
+        console.log(`Library contains ${existingBooks.length} books (manual uploads only)`);
+        // Book auto-initialization disabled - admin must upload books manually
     } catch (error) {
-        console.error('Error initializing books:', error);
+        console.error('Error checking books:', error);
     }
 }
 
-// Get all books
+// Get all books from server
 async function getAllBooks() {
     try {
+        // Use the server API to get books
+        if (window.API && window.API.getBooks) {
+            return await window.API.getBooks();
+        }
+        // Fallback to local database
         return await window.dbModule.dbGetAll('books');
     } catch (error) {
         console.error('Error getting books:', error);
@@ -161,6 +142,12 @@ async function getBooksByDepartment(department) {
 // Get book by ID
 async function getBookById(id) {
     try {
+        // Use the server API to get books, then find by ID
+        if (window.API && window.API.getBooks) {
+            const books = await window.API.getBooks();
+            return books.find(b => b.id === id) || null;
+        }
+        // Fallback to local database
         return await window.dbModule.dbGet('books', id);
     } catch (error) {
         console.error('Error getting book:', error);

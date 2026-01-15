@@ -8,8 +8,10 @@ const crypto = require('crypto');
 // Configuration
 const PORT = process.env.PORT || 3000;
 const FRONTEND_DIR = path.join(__dirname, '..');
+const DB_FILE = path.join(__dirname, '..', 'database', 'database.json');
+const BOOKS_FILE = path.join(__dirname, '..', 'database', 'books.json');
 
-// Simple in-memory database (will be replaced with file-based storage)
+// Database with file-based persistence
 let db = {
     books: [],
     students: [],
@@ -17,6 +19,71 @@ let db = {
     adminPassword: crypto.createHash('sha256').update('112233').digest('hex'),
     sessions: {}
 };
+
+// Load database from file
+function loadDatabase() {
+    try {
+        // Load main database (students, history, etc.)
+        if (fs.existsSync(DB_FILE)) {
+            const data = fs.readFileSync(DB_FILE, 'utf8');
+            const loaded = JSON.parse(data);
+            db.students = loaded.students || [];
+            db.borrowingHistory = loaded.borrowingHistory || [];
+            db.adminPassword = loaded.adminPassword || db.adminPassword;
+            console.log(`✅ Main database loaded: ${db.students.length} students`);
+        } else {
+            console.log('ℹ️  No existing database file, starting fresh');
+        }
+
+        // Load books from separate file
+        if (fs.existsSync(BOOKS_FILE)) {
+            const booksData = fs.readFileSync(BOOKS_FILE, 'utf8');
+            const loadedBooks = JSON.parse(booksData);
+            db.books = loadedBooks.books || [];
+            console.log(`✅ Books database loaded: ${db.books.length} books`);
+        } else {
+            console.log('ℹ️  No existing books file, starting fresh');
+            db.books = [];
+        }
+    } catch (error) {
+        console.error('❌ Error loading database:', error.message);
+    }
+}
+
+// Save database to file
+function saveDatabase() {
+    try {
+        // Ensure database directory exists
+        const dbDir = path.dirname(DB_FILE);
+        if (!fs.existsSync(dbDir)) {
+            fs.mkdirSync(dbDir, { recursive: true });
+        }
+
+        // Save main database (without books)
+        const mainData = {
+            students: db.students,
+            borrowingHistory: db.borrowingHistory,
+            adminPassword: db.adminPassword
+        };
+        fs.writeFileSync(DB_FILE, JSON.stringify(mainData, null, 2), 'utf8');
+        console.log('💾 Main database saved');
+    } catch (error) {
+        console.error('❌ Error saving database:', error.message);
+    }
+}
+
+// Save books to separate file
+function saveBooksDatabase() {
+    try {
+        const booksData = {
+            books: db.books
+        };
+        fs.writeFileSync(BOOKS_FILE, JSON.stringify(booksData, null, 2), 'utf8');
+        console.log('📚 Books database saved');
+    } catch (error) {
+        console.error('❌ Error saving books database:', error.message);
+    }
+}
 
 // Initialize sample books
 function initializeSampleBooks() {
@@ -109,7 +176,7 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    // POST /api/books - Add book (simple version without file upload)
+    // POST /api/books - Add book with all fields including file data
     if (url === '/api/books' && method === 'POST') {
         parseBody(req, (err, body) => {
             const newBook = {
@@ -118,11 +185,18 @@ const server = http.createServer((req, res) => {
                 author: body.author,
                 department: body.department,
                 description: body.description || '',
-                addedAt: new Date().toISOString()
+                image: body.image || null,
+                fileName: body.fileName || null,
+                fileSize: body.fileSize || 0,
+                fileType: body.fileType || 'application/pdf',
+                fileData: body.fileData || null,
+                addedAt: body.addedAt || new Date().toISOString(),
+                addedBy: body.addedBy || 'admin'
             };
             db.books.push(newBook);
-            console.log(`📚 Book added: ${newBook.title}`);
-            sendJSON(res, 200, { success: true, bookId: newBook.id });
+            saveBooksDatabase();
+            console.log(`📚 Book added to books.json: ${newBook.title}`);
+            sendJSON(res, 200, { success: true, bookId: newBook.id, message: 'Book saved to database' });
         });
         return;
     }
@@ -151,17 +225,26 @@ const server = http.createServer((req, res) => {
                 return;
             }
 
-            const hashedPassword = crypto.createHash('sha256').update(body.password).digest('hex');
+            // Validate required fields
+            if (!body.password || !body.studentId || !body.name || !body.email) {
+                sendJSON(res, 400, { success: false, message: 'Missing required fields' });
+                return;
+            }
+
+            // Store password as plain text (no hashing)
             const student = {
                 id: db.students.length + 1,
                 studentId: body.studentId,
                 name: body.name,
                 email: body.email,
-                password: hashedPassword,
+                password: body.password,  // Plain text password
                 department: body.department,
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                lastLogin: null,
+                loginHistory: []
             };
             db.students.push(student);
+            saveDatabase();
             console.log(`👨‍🎓 Student registered: ${student.name}`);
             sendJSON(res, 200, { success: true, message: 'Student registered successfully' });
         });
@@ -177,9 +260,17 @@ const server = http.createServer((req, res) => {
                 return;
             }
 
-            const hashedInput = crypto.createHash('sha256').update(body.password || '').digest('hex');
-            if (hashedInput === student.password) {
+            // Compare plain text passwords
+            if (body.password === student.password) {
                 const sessionId = crypto.randomBytes(16).toString('hex');
+
+                // Record login date/time
+                const loginTime = new Date().toISOString();
+                student.lastLogin = loginTime;
+                if (!student.loginHistory) student.loginHistory = [];
+                student.loginHistory.push(loginTime);
+                saveDatabase();
+
                 db.sessions[sessionId] = {
                     type: 'student',
                     studentId: student.studentId,
@@ -187,6 +278,7 @@ const server = http.createServer((req, res) => {
                     email: student.email,
                     department: student.department
                 };
+                console.log(`🔐 Student logged in: ${student.name} at ${loginTime}`);
                 sendJSON(res, 200, { success: true, sessionId, user: db.sessions[sessionId] });
             } else {
                 sendJSON(res, 401, { success: false, message: 'Invalid credentials' });
@@ -227,6 +319,7 @@ const server = http.createServer((req, res) => {
             };
 
             db.borrowingHistory.push(record);
+            saveDatabase();
             console.log(`📖 Book borrowed: ${book.title}`);
             sendJSON(res, 200, { success: true, recordId: record.id, dueDate: dueDate.toISOString() });
         });
@@ -236,6 +329,12 @@ const server = http.createServer((req, res) => {
     // GET /api/borrow/all - Get all borrowing records
     if (url === '/api/borrow/all' && method === 'GET') {
         sendJSON(res, 200, { success: true, data: db.borrowingHistory });
+        return;
+    }
+
+    // GET /api/students - Get all registered students
+    if (url === '/api/students' && method === 'GET') {
+        sendJSON(res, 200, { success: true, data: db.students });
         return;
     }
 
@@ -258,6 +357,7 @@ server.listen(PORT, () => {
     console.log(`✅ Server running on: http://localhost:${PORT}`);
     console.log(`🔑 Admin password: 112233`);
     console.log(`📁 Serving from: ${FRONTEND_DIR}`);
+    console.log(`💾 Database file: ${DB_FILE}`);
     console.log('='.repeat(60));
     console.log('');
     console.log('🌐 Access URLs:');
@@ -274,7 +374,14 @@ server.listen(PORT, () => {
     console.log('   POST /api/borrow');
     console.log('='.repeat(60));
 
-    initializeSampleBooks();
+    // Load existing database first
+    loadDatabase();
+
+    // Initialize sample books only if none exist
+    // initializeSampleBooks(); // Disabled - keep books empty
+
+    // Save initial state
+    saveDatabase();
 
     console.log('');
     console.log('✅ Server is ready! Press Ctrl+C to stop.');

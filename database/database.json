@@ -1,0 +1,20 @@
+{
+  "students": [
+    {
+      "id": 1,
+      "studentId": "22",
+      "name": "vishnu.n",
+      "email": "vn@gmail.com",
+      "password": "2233",
+      "department": "mechanical",
+      "createdAt": "2026-01-15T09:00:38.078Z",
+      "lastLogin": "2026-01-15T09:24:43.520Z",
+      "loginHistory": [
+        "2026-01-15T09:00:50.148Z",
+        "2026-01-15T09:24:43.520Z"
+      ]
+    }
+  ],
+  "borrowingHistory": [],
+  "adminPassword": "e0bc60c82713f64ef8a57c0c40d02ce24fd0141d5cc3086259c19b1e62a62bea"
+}

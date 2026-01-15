@@ -211,50 +211,58 @@
     <script src="js/books.js"></script>
     <script src="js/app.js"></script>
     <script>
-        // Check if student is logged in using API
-        if (!API.isStudent()) {
-            console.log('Not logged in as student, redirecting...');
-            window.location.href = 'student-login.html';
-        } else {
+        // Wait for DOM and scripts to load before checking authentication
+        document.addEventListener('DOMContentLoaded', function () {
+            // Debug: Log session state
+            console.log('Session check - userType:', localStorage.getItem('userType'));
+            console.log('Session check - sessionId:', localStorage.getItem('sessionId'));
+
+            // Check if student is logged in using API
+            if (!API.isStudent()) {
+                console.log('Not logged in as student, redirecting...');
+                window.location.href = 'student-login.html';
+                return;
+            }
+
             console.log('✅ Student authenticated');
-        }
 
-        // Initialize dashboard
-        initStudentDashboard();
+            // Initialize dashboard
+            initStudentDashboard();
 
-        // Tab switching
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function (e) {
-                e.preventDefault();
-                const tab = this.dataset.tab;
+            // Tab switching
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const tab = this.dataset.tab;
 
-                // Update active nav item
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                this.classList.add('active');
+                    // Update active nav item
+                    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                    this.classList.add('active');
 
-                // Update active tab content
-                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-                document.getElementById(tab + 'Tab').classList.add('active');
+                    // Update active tab content
+                    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                    document.getElementById(tab + 'Tab').classList.add('active');
 
-                // Reload data when switching to specific tabs
-                if (tab === 'borrowed') {
-                    loadBorrowedBooks();
-                } else if (tab === 'history') {
-                    loadStudentHistoryTimeline();
-                } else if (tab === 'profile') {
-                    loadStudentProfile();
-                } else if (tab === 'books') {
-                    loadBooksGrid(false);
-                }
+                    // Reload data when switching to specific tabs
+                    if (tab === 'borrowed') {
+                        loadBorrowedBooks();
+                    } else if (tab === 'history') {
+                        loadStudentHistoryTimeline();
+                    } else if (tab === 'profile') {
+                        loadStudentProfile();
+                    } else if (tab === 'books') {
+                        loadBooksGrid(false);
+                    }
+                });
             });
-        });
 
-        // Set current date
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
+            // Set current date
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
         });
     </script>
 </body>
