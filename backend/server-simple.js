@@ -339,13 +339,24 @@ const server = http.createServer((req, res) => {
     }
 
     // Serve frontend files
-    let filePath = path.join(FRONTEND_DIR, url === '/' ? 'index.html' : url);
+    const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
+    let pathname = parsedUrl.pathname;
+
+    // Default to index.html for root
+    if (pathname === '/') {
+        pathname = '/index.html';
+    }
+
+    // Security: Prevent directory traversal
+    const safePath = path.normalize(pathname).replace(/^(\.\.[\/\\])+/, '');
+    let filePath = path.join(FRONTEND_DIR, safePath);
 
     if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
         serveFile(res, filePath);
     } else {
+        console.log(`❌ 404 Not Found: ${pathname}`);
         res.writeHead(404);
-        res.end('Not found');
+        res.end('Not Found');
     }
 });
 
