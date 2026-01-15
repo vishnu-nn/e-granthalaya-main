@@ -361,48 +361,55 @@ const server = http.createServer((req, res) => {
 });
 
 // Start server
-server.listen(PORT, () => {
-    console.log('='.repeat(60));
-    console.log('📚 e-Granthalaya Library Management System - Simple Server');
-    console.log('='.repeat(60));
-    console.log(`✅ Server running on: http://localhost:${PORT}`);
-    console.log(`🔑 Admin password: 112233`);
-    console.log(`📁 Serving from: ${FRONTEND_DIR}`);
-    console.log(`💾 Database file: ${DB_FILE}`);
-    console.log('='.repeat(60));
-    console.log('');
-    console.log('🌐 Access URLs:');
-    console.log(`   Main: http://localhost:${PORT}`);
-    console.log(`   Admin: http://localhost:${PORT}/admin-login.html`);
-    console.log(`   Student: http://localhost:${PORT}/student-login.html`);
-    console.log('');
-    console.log('📡 API Endpoints:');
-    console.log('   GET  /api/books');
-    console.log('   POST /api/books');
-    console.log('   POST /api/auth/admin/login');
-    console.log('   POST /api/auth/student/register');
-    console.log('   POST /api/auth/student/login');
-    console.log('   POST /api/borrow');
-    console.log('='.repeat(60));
+if (process.env.VERCEL) {
+    // Export for Vercel serverless environment
+    module.exports = (req, res) => {
+        server.emit('request', req, res);
+    };
+} else {
+    server.listen(PORT, () => {
+        console.log('='.repeat(60));
+        console.log('📚 e-Granthalaya Library Management System - Simple Server');
+        console.log('='.repeat(60));
+        console.log(`✅ Server running on: http://localhost:${PORT}`);
+        console.log(`🔑 Admin password: 112233`);
+        console.log(`📁 Serving from: ${FRONTEND_DIR}`);
+        console.log(`💾 Database file: ${DB_FILE}`);
+        console.log('='.repeat(60));
+        console.log('');
+        console.log('🌐 Access URLs:');
+        console.log(`   Main: http://localhost:${PORT}`);
+        console.log(`   Admin: http://localhost:${PORT}/admin-login.html`);
+        console.log(`   Student: http://localhost:${PORT}/student-login.html`);
+        console.log('');
+        console.log('📡 API Endpoints:');
+        console.log('   GET  /api/books');
+        console.log('   POST /api/books');
+        console.log('   POST /api/auth/admin/login');
+        console.log('   POST /api/auth/student/register');
+        console.log('   POST /api/auth/student/login');
+        console.log('   POST /api/borrow');
+        console.log('='.repeat(60));
 
-    // Load existing database first
-    loadDatabase();
+        // Load existing database first
+        loadDatabase();
 
-    // Initialize sample books only if none exist
-    // initializeSampleBooks(); // Disabled - keep books empty
+        // Initialize sample books only if none exist
+        // initializeSampleBooks(); // Disabled - keep books empty
 
-    // Save initial state
-    saveDatabase();
+        // Save initial state
+        saveDatabase();
 
-    console.log('');
-    console.log('✅ Server is ready! Press Ctrl+C to stop.');
-    console.log('');
-});
-
-process.on('SIGINT', () => {
-    console.log('\n👋 Shutting down server...');
-    server.close(() => {
-        console.log('✅ Server stopped');
-        process.exit(0);
+        console.log('');
+        console.log('✅ Server is ready! Press Ctrl+C to stop.');
+        console.log('');
     });
-});
+
+    process.on('SIGINT', () => {
+        console.log('\n👋 Shutting down server...');
+        server.close(() => {
+            console.log('✅ Server stopped');
+            process.exit(0);
+        });
+    });
+}
