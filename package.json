@@ -5,7 +5,7 @@
     "main": "backend/server-simple.js",
     "scripts": {
         "start": "node backend/server-simple.js",
-        "deploy": "gh-pages -d ."
+        "deploy": "gh-pages -d . -s \"{*.html,css/**/*,js/**/*,assets/**/*,README.md}\""
     },
     "homepage": "https://school-of-mines-kgf.github.io/e-granthalaya-main",
     "dependencies": {
