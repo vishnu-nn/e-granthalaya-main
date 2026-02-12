@@ -1,20 +1,20 @@
 # e-Granthalaya - Digital Library Management System
 
-[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://school-of-mines-kgf.github.io/e-granthalaya/)
-[![GitHub](https://img.shields.io/badge/github-repo-blue)](https://github.com/school-of-mines-kgf/e-granthalaya)
+[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://school-of-mines-kgf.github.io/e-granthalaya-main/)
+[![GitHub](https://img.shields.io/badge/github-repo-blue)](https://github.com/school-of-mines-kgf/e-granthalaya-main)
 
 # 🚀 One-Click Deploy
 
 Get your own public URL running in minutes:
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/school-of-mines-kgf/e-granthalaya)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/school-of-mines-kgf/e-granthalaya-main)
 
 
 A full-stack MVC library management system built with Node.js backend and vanilla JavaScript frontend.
 
 ## 🌐 Live Demo
 
-**Frontend**: https://school-of-mines-kgf.github.io/e-granthalaya/
+**Frontend**: https://school-of-mines-kgf.github.io/e-granthalaya-main/
 
 **Note**: The live demo shows the frontend interface. For full functionality (login, book management), run locally with the backend server.
 

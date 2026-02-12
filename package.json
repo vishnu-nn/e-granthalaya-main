@@ -4,14 +4,19 @@
     "description": "Library Management System",
     "main": "backend/server-simple.js",
     "scripts": {
-        "start": "node backend/server-simple.js"
+        "start": "node backend/server-simple.js",
+        "deploy": "gh-pages -d ."
     },
+    "homepage": "https://school-of-mines-kgf.github.io/e-granthalaya-main",
     "dependencies": {
-        "express": "^4.18.2",
+        "body-parser": "^1.20.2",
         "cors": "^2.8.5",
-        "body-parser": "^1.20.2"
+        "express": "^4.18.2"
     },
     "engines": {
         "node": ">=14.0.0"
+    },
+    "devDependencies": {
+        "gh-pages": "^6.3.0"
     }
 }
