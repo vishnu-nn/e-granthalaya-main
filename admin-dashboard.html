@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - School of Mines e-Granthalaya</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="assets/logo.png" alt="Logo" class="sidebar-logo">
+                <h2>e-Granthalaya</h2>
+                <p class="user-type">Admin Panel</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-tab="books">
+                    <span class="nav-icon">📚</span>
+                    <span>All Books</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="records">
+                    <span class="nav-icon">📋</span>
+                    <span>Borrowing Records</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="students">
+                    <span class="nav-icon">👨‍🎓</span>
+                    <span>Students</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="addBooks">
+                    <span class="nav-icon">➕</span>
+                    <span>Add Books</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="deletedBooks">
+                    <span class="nav-icon">🗑️</span>
+                    <span>Deleted Books</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="btn btn-logout" onclick="logout()">
+                    <span>🚪</span> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <h1>School of Mines e-Granthalaya</h1>
+                    <p id="currentDate"></p>
+                </div>
+                <div class="header-right">
+                    <span class="admin-badge">👨‍💼 Admin</span>
+                </div>
+            </header>
+
+            <!-- Books Tab -->
+            <section id="booksTab" class="tab-content active">
+                <div class="section-header">
+                    <h2>📚 All Books in Library</h2>
+                    <div class="filters-row">
+                        <select id="departmentFilter" onchange="filterByDepartment()">
+                            <option value="">All Departments</option>
+                            <option value="computer-science">💻 Computer Science E-Books</option>
+                            <option value="mechanical">⚙️ Mechanical E-Books</option>
+                            <option value="mining">⛏️ Mining E-Books</option>
+                        </select>
+                        <div class="search-bar">
+                            <input type="text" id="bookSearch" placeholder="Search books..." onkeyup="filterBooks()">
+                        </div>
+                    </div>
+                </div>
+                <div id="booksGrid" class="books-grid">
+                    <!-- Books will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Records Tab -->
+            <section id="recordsTab" class="tab-content">
+                <div class="section-header">
+                    <h2>📋 All Borrowing Records</h2>
+                    <div class="stats-mini">
+                        <span id="totalBorrowings">0 Total Borrowings</span>
+                    </div>
+                </div>
+                <div class="info-banner">
+                    <span>📅 Borrowing Period: <strong>15 Days</strong></span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Student Name</th>
+                                <th>Department</th>
+                                <th>Book Name</th>
+                                <th>Borrow Date</th>
+                                <th>Due Date</th>
+                                <th>Return Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recordsTableBody">
+                            <!-- Records will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Students Tab -->
+            <section id="studentsTab" class="tab-content">
+                <div class="section-header">
+                    <h2>👨‍🎓 All Student Details</h2>
+                    <div class="stats-mini">
+                        <span id="totalStudents">0 Students</span>
+                    </div>
+                </div>
+                <div class="info-banner">
+                    <span>📊 Complete student login and borrowing details</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table student-details-table">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Department</th>
+                                <th>Last Login</th>
+                                <th>Books Borrowed</th>
+                                <th>Books Returned</th>
+                                <th>Currently Holding</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTableBody">
+                            <!-- Students will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Detailed Borrowing History Section -->
+                <div class="section-header" style="margin-top: 40px;">
+                    <h2>📖 Detailed Borrowing History by Student</h2>
+                </div>
+                <div id="studentDetailsContainer">
+                    <!-- Detailed student cards will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Add Books Tab -->
+            <section id="addBooksTab" class="tab-content">
+                <div class="section-header">
+                    <h2>➕ Add New Books to Library</h2>
+                </div>
+                <div class="add-books-container">
+                    <div class="add-book-form glass-card">
+                        <h3>📁 Select Book File</h3>
+                        <p class="form-description">Choose a PDF file from your computer to add to the library.</p>
+
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <div class="upload-icon">📚</div>
+                            <p class="upload-text">Click to select a file or drag & drop here</p>
+                            <p class="upload-hint">Supported: PDF, EPUB files</p>
+                            <input type="file" id="bookFileInput" accept=".pdf,.epub" hidden>
+                        </div>
+
+                        <div class="selected-file-info" id="selectedFileInfo" style="display: none;">
+                            <div class="file-preview">
+                                <span class="file-icon">📄</span>
+                                <div class="file-details">
+                                    <p class="file-name" id="selectedFileName">No file selected</p>
+                                    <p class="file-size" id="selectedFileSize">0 KB</p>
+                                </div>
+                                <button class="btn-remove-file" onclick="removeSelectedFile()">✕</button>
+                            </div>
+                        </div>
+
+                        <div class="book-metadata-form" id="bookMetadataForm" style="display: none;">
+                            <h4>📝 Book Details</h4>
+
+                            <div class="form-group">
+                                <label for="bookTitle">Book Title *</label>
+                                <input type="text" id="bookTitle" placeholder="Enter book title" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="bookAuthor">Author *</label>
+                                <input type="text" id="bookAuthor" placeholder="Enter author name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="bookDepartment">Department *</label>
+                                <select id="bookDepartment" required>
+                                    <option value="">Select Department</option>
+                                    <option value="computer-science">💻 Computer Science</option>
+                                    <option value="mechanical">⚙️ Mechanical</option>
+                                    <option value="mining">⛏️ Mining</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="bookCoverUrl">Cover Image URL (Optional)</label>
+                                <input type="url" id="bookCoverUrl" placeholder="https://example.com/cover.jpg">
+                            </div>
+
+                            <button class="btn btn-primary" onclick="addBookToLibrary()">
+                                <span>📥</span> Add Book to Library
+                            </button>
+                        </div>
+
+                        <div id="addBookMessage" class="message-box" style="display: none;"></div>
+                    </div>
+
+                    <div class="recently-added glass-card">
+                        <h3>📚 Recently Added Books</h3>
+                        <div id="recentlyAddedList" class="recently-added-list">
+                            <p class="empty-message">No books added recently</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Deleted Books Tab -->
+            <section id="deletedBooksTab" class="tab-content">
+                <div class="section-header">
+                    <h2>🗑️ Deleted Books</h2>
+                    <div class="stats-mini">
+                        <span id="totalDeletedBooks">0 Deleted Books</span>
+                    </div>
+                </div>
+                <div class="info-banner warning">
+                    <span>📋 These books have been removed from the library. You can restore them anytime.</span>
+                </div>
+                <div id="deletedBooksGrid" class="books-grid">
+                    <!-- Deleted books will be loaded here -->
+                    <div class="empty-state">
+                        <div class="icon">🗑️</div>
+                        <p>No deleted books yet</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Delete Book Modal -->
+        <div id="deleteBookModal" class="modal">
+            <div class="modal-overlay" onclick="closeDeleteModal()"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>🗑️ Remove Book</h3>
+                    <button class="modal-close" onclick="closeDeleteModal()">✕</button>
+                </div>
+                <div class="modal-body" id="deleteModalDetails">
+                    <!-- Book details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                    <button class="btn btn-danger" id="confirmDeleteBtn">Remove Book</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Book Reader Modal -->
+    <div id="bookReaderModal" class="modal book-reader-modal">
+        <div class="modal-overlay" onclick="closeBookReader()"></div>
+        <div class="modal-content reader-content">
+            <div class="reader-header">
+                <div class="reader-book-info">
+                    <h3 id="readerBookTitle">Book Title</h3>
+                    <p id="readerBookAuthor">Author Name</p>
+                </div>
+                <button class="modal-close" onclick="closeBookReader()">✕</button>
+            </div>
+            <div class="reader-body" id="readerBody">
+                <!-- Book content will be displayed here -->
+                <div class="reader-placeholder">
+                    <div class="book-preview-icon">📖</div>
+                    <p>Loading book content...</p>
+                </div>
+            </div>
+            <div class="reader-footer">
+                <div class="reader-info">
+                    <span id="readerDueDate"></span>
+                </div>
+                <div class="reader-actions">
+                    <button class="btn btn-secondary" onclick="closeBookReader()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/api-bridge.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/books.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Wait for DOM and scripts to load before checking authentication
+        document.addEventListener('DOMContentLoaded', function () {
+            // Debug: Log session state
+            console.log('Session check - userType:', localStorage.getItem('userType'));
+            console.log('Session check - sessionId:', localStorage.getItem('sessionId'));
+
+            // Check if admin is logged in using API
+            if (!API.isAdmin()) {
+                console.log('Not logged in as admin, redirecting...');
+                window.location.href = 'admin-login.html';
+                return;
+            }
+
+            console.log('✅ Admin authenticated');
+
+            // Initialize dashboard
+            initAdminDashboard();
+
+            // Tab switching
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const tab = this.dataset.tab;
+
+                    // Update active nav item
+                    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Update active tab content
+                    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                    document.getElementById(tab + 'Tab').classList.add('active');
+
+                    // Reload data when switching to specific tabs
+                    if (tab === 'records') {
+                        loadBorrowingRecords();
+                    } else if (tab === 'students') {
+                        loadStudentsList();
+                    } else if (tab === 'deletedBooks') {
+                        loadDeletedBooks();
+                    } else if (tab === 'books') {
+                        loadBooksGrid(true);
+                    } else if (tab === 'addBooks') {
+                        loadRecentlyAddedBooks();
+                    }
+                });
+            });
+
+            // Set current date
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        });
+    </script>
+</body>
+
+</html>

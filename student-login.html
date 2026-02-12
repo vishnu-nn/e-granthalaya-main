@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login - School of Mines e-Granthalaya</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .auth-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .auth-tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .form-hint {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-hint a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .form-hint a:hover {
+            text-decoration: underline;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #00c853, #00e676);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="login-card">
+            <a href="index.html" class="back-link">← Back to Home</a>
+
+            <div class="logo-container small">
+                <img src="assets/logo.png" alt="School of Mines Logo" class="logo">
+            </div>
+            <h1 class="title">Student Portal</h1>
+            <p class="subtitle">School of Mines e-Granthalaya</p>
+
+            <!-- Auth Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchTab('login')">🔐 Login</button>
+                <button class="auth-tab" onclick="switchTab('register')">📝 Register</button>
+            </div>
+
+            <div id="successMessage" class="success-message"></div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="login-form auth-form active">
+                <div class="form-group">
+                    <label for="loginStudentId">Student ID</label>
+                    <input type="text" id="loginStudentId" name="studentId" placeholder="Enter your student ID"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginName">Full Name</label>
+                    <input type="text" id="loginName" name="name" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" name="password" placeholder="Enter your password"
+                        required>
+                </div>
+
+                <div id="loginError" class="error-message"></div>
+
+                <button type="submit" id="loginBtn" class="btn btn-primary">
+                    <span>🔐 Login</span>
+                </button>
+
+                <p class="form-hint">
+                    Don't have an account? <a href="#" onclick="switchTab('register'); return false;">Register here</a>
+                </p>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="login-form auth-form">
+                <div class="form-group">
+                    <label for="regStudentId">Student ID</label>
+                    <input type="text" id="regStudentId" name="studentId" placeholder="Enter your student ID" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="regName">Full Name</label>
+                    <input type="text" id="regName" name="name" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="regEmail">Email Address</label>
+                    <input type="email" id="regEmail" name="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="regPassword">Password</label>
+                    <input type="password" id="regPassword" name="password" placeholder="Create a password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="regDepartment">Select Department</label>
+                    <select id="regDepartment" name="department" required>
+                        <option value="">-- Select Department --</option>
+                        <option value="computer-science">💻 Computer Science E-Books</option>
+                        <option value="mechanical">⚙️ Mechanical E-Books</option>
+                        <option value="mining">⛏️ Mining E-Books</option>
+                    </select>
+                </div>
+
+                <div id="registerError" class="error-message"></div>
+
+                <button type="submit" id="registerBtn" class="btn btn-primary">
+                    <span>📝 Create Account</span>
+                </button>
+
+                <p class="form-hint">
+                    Already have an account? <a href="#" onclick="switchTab('login'); return false;">Login here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <div class="background-decoration">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+        <div class="circle circle-3"></div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // Switch between Login and Register tabs
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.auth-tab:${tab === 'login' ? 'first-child' : 'last-child'}`).classList.add('active');
+
+            // Update forms
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            document.getElementById(tab === 'login' ? 'loginForm' : 'registerForm').classList.add('active');
+
+            // Clear error messages
+            document.getElementById('loginError').style.display = 'none';
+            document.getElementById('registerError').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        // Login Form Handler
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const studentId = document.getElementById('loginStudentId').value;
+            const name = document.getElementById('loginName').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const errorDiv = document.getElementById('loginError');
+            const submitBtn = document.getElementById('loginBtn');
+
+            // Disable button during request
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>Logging in...</span>';
+            errorDiv.style.display = 'none';
+
+            // Try to login
+            const result = await API.studentLogin(studentId, password);
+
+            // Re-enable button
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<span>🔐 Login</span>';
+
+            if (result.success) {
+                // Store name in userData if not already there
+                const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+                userData.name = name;
+                localStorage.setItem('userData', JSON.stringify(userData));
+
+                console.log('✅ Student logged in successfully');
+                window.location.href = 'student-dashboard.html';
+            } else {
+                errorDiv.textContent = result.message || 'Invalid credentials. Please try again.';
+                errorDiv.style.display = 'block';
+            }
+        });
+
+        // Register Form Handler
+        document.getElementById('registerForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const studentId = document.getElementById('regStudentId').value;
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const department = document.getElementById('regDepartment').value;
+
+            const errorDiv = document.getElementById('registerError');
+            const successDiv = document.getElementById('successMessage');
+            const submitBtn = document.getElementById('registerBtn');
+
+            // Disable button during request
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>Creating account...</span>';
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            // Try to register
+            const result = await API.studentRegister({
+                studentId: studentId,
+                name: name,
+                email: email,
+                password: password,
+                department: department
+            });
+
+            // Re-enable button
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<span>📝 Create Account</span>';
+
+            if (result.success) {
+                console.log('✅ Student registered successfully');
+                successDiv.textContent = '✅ Account created successfully! You can now login.';
+                successDiv.style.display = 'block';
+
+                // Clear form
+                document.getElementById('registerForm').reset();
+
+                // Switch to login tab after 2 seconds
+                setTimeout(() => {
+                    switchTab('login');
+                    document.getElementById('loginStudentId').value = studentId;
+                }, 2000);
+            } else {
+                errorDiv.textContent = result.message || 'Registration failed. Please try again.';
+                errorDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - School of Mines e-Granthalaya</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <div class="login-card">
+            <a href="index.html" class="back-link">← Back to Home</a>
+
+            <div class="logo-container small">
+                <img src="assets/logo.png" alt="School of Mines Logo" class="logo">
+            </div>
+            <h1 class="title">Admin Login</h1>
+            <p class="subtitle">School of Mines e-Granthalaya</p>
+
+            <form id="adminLoginForm" class="login-form">
+                <div class="form-group">
+                    <label for="password">Admin Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" name="password" placeholder="Enter admin password"
+                            required>
+                        <button type="button" class="toggle-password" onclick="togglePassword()">👁️</button>
+                    </div>
+                </div>
+
+                <div id="errorMessage" class="error-message"></div>
+
+                <button type="submit" class="btn btn-primary">
+                    <span>Login as Admin</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="background-decoration">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+        <div class="circle circle-3"></div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        document.getElementById('adminLoginForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            
+            // Use API instead of local auth
+            const result = await API.adminLogin(password);
+
+            if (result.success) {
+                window.location.href = 'admin-dashboard.html';
+            } else {
+                const errorDiv = document.getElementById('errorMessage');
+                errorDiv.textContent = result.message || 'Invalid password';
+                errorDiv.style.display = 'block';
+            }
+        });
+
+        function togglePassword() {
+            const input = document.getElementById('password');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+    </script>
+</body>
+
+</html>
