@@ -13,8 +13,8 @@ app.use(cors({
     origin: true,
     credentials: true
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 
 // Session configuration
 app.use(session({
@@ -151,22 +151,26 @@ function initializeSampleBooks() {
 }
 
 // Start server
-app.listen(PORT, () => {
-    console.log('='.repeat(50));
-    console.log('📚 e-Granthalaya Library Management System');
-    console.log('='.repeat(50));
-    console.log(`Server running on: http://localhost:${PORT}`);
-    console.log(`Admin login: http://localhost:${PORT}/admin-login.html`);
-    console.log(`Student login: http://localhost:${PORT}/student-login.html`);
-    console.log(`Default admin password: 112233`);
-    console.log('='.repeat(50));
+if (process.env.VERCEL) {
+    module.exports = app;
+} else {
+    app.listen(PORT, () => {
+        console.log('='.repeat(50));
+        console.log('📚 e-Granthalaya Library Management System');
+        console.log('='.repeat(50));
+        console.log(`Server running on: http://localhost:${PORT}`);
+        console.log(`Admin login: http://localhost:${PORT}/admin-login.html`);
+        console.log(`Student login: http://localhost:${PORT}/student-login.html`);
+        console.log(`Default admin password: 112233`);
+        console.log('='.repeat(50));
 
-    // Initialize sample books
-    initializeSampleBooks();
-});
+        // Initialize sample books
+        initializeSampleBooks();
+    });
 
-// Graceful shutdown
-process.on('SIGINT', () => {
-    console.log('\nShutting down server...');
-    process.exit(0);
-});
+    // Graceful shutdown
+    process.on('SIGINT', () => {
+        console.log('\nShutting down server...');
+        process.exit(0);
+    });
+}
