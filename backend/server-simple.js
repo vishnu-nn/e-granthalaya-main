@@ -203,6 +203,21 @@ const server = http.createServer((req, res) => {
         return;
     }
 
+    // DELETE /api/books/:id - Delete book
+    if (url.startsWith('/api/books/') && method === 'DELETE') {
+        const id = parseInt(url.split('/')[3], 10);
+        const bookIndex = db.books.findIndex(b => b.id === id);
+        if (bookIndex !== -1) {
+            const deletedBook = db.books.splice(bookIndex, 1)[0];
+            saveBooksDatabase();
+            console.log(`📚 Book deleted from books.json: ${deletedBook.title}`);
+            sendJSON(res, 200, { success: true, message: 'Book deleted from database' });
+        } else {
+            sendJSON(res, 404, { success: false, message: 'Book not found' });
+        }
+        return;
+    }
+
     // POST /api/auth/admin/login - Admin login
     if (url === '/api/auth/admin/login' && method === 'POST') {
         parseBody(req, (err, body) => {

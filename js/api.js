@@ -59,6 +59,19 @@ const API = {
         }
     },
 
+    async deleteBook(bookId) {
+        try {
+            const response = await fetch(`${API_BASE}/books/${bookId}`, {
+                method: 'DELETE'
+            });
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error deleting book:', error);
+            return { success: false, message: 'Failed to delete book' };
+        }
+    },
+
     // ===== Authentication =====
     async adminLogin(password) {
         try {

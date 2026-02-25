@@ -983,10 +983,13 @@ async function confirmDeleteBook() {
         };
         delete deletedBook.id; // Remove id so it gets auto-generated in deletedBooks store
 
-        // Add to deleted books store
+        // Add to deleted books store locally
         await window.dbModule.dbAdd('deletedBooks', deletedBook);
 
         // Delete from active books
+        if (window.API && window.API.deleteBook) {
+            await window.API.deleteBook(bookToDelete);
+        }
         await window.dbModule.dbDelete('books', bookToDelete);
 
         closeDeleteModal();

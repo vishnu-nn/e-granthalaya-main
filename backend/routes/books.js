@@ -2,20 +2,19 @@
 const express = require('express');
 const router = express.Router();
 const bookController = require('../controllers/bookController');
-const { requireAuth, requireAdmin } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
-// Public routes (authenticated users)
-router.get('/', requireAuth, bookController.getAllBooks);
-router.get('/:id', requireAuth, bookController.getBookById);
-router.get('/department/:department', requireAuth, bookController.getBooksByDepartment);
-router.get('/:id/download', requireAuth, bookController.downloadBook);
+// Public routes
+router.get('/', bookController.getAllBooks);
+router.get('/deleted/all', bookController.getDeletedBooks);
+router.get('/:id', bookController.getBookById);
+router.get('/department/:department', bookController.getBooksByDepartment);
+router.get('/:id/download', bookController.downloadBook);
 
-// Admin-only routes
-router.post('/', requireAdmin, upload.single('file'), bookController.addBook);
-router.put('/:id', requireAdmin, bookController.updateBook);
-router.delete('/:id', requireAdmin, bookController.deleteBook);
-router.get('/deleted/all', requireAdmin, bookController.getDeletedBooks);
-router.post('/:id/restore', requireAdmin, bookController.restoreBook);
+// Admin routes (auth handled client-side via localStorage)
+router.post('/', upload.single('file'), bookController.addBook);
+router.put('/:id', bookController.updateBook);
+router.delete('/:id', bookController.deleteBook);
+router.post('/:id/restore', bookController.restoreBook);
 
 module.exports = router;

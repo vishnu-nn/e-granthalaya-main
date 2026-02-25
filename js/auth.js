@@ -98,12 +98,14 @@ async function registerStudent(studentData) {
 
 // Check if admin is logged in
 function isAdminLoggedIn() {
+    if (window.API) return window.API.isAdmin();
     const user = JSON.parse(localStorage.getItem('currentUser'));
     return user && user.type === 'admin';
 }
 
 // Check if student is logged in
 function isStudentLoggedIn() {
+    if (window.API) return window.API.isStudent();
     const user = JSON.parse(localStorage.getItem('currentUser'));
     return user && user.type === 'student';
 }
@@ -115,6 +117,9 @@ function getCurrentUser() {
 
 // Logout
 function logout() {
+    if (window.API) {
+        window.API.logout();
+    }
     localStorage.removeItem('currentUser');
     window.location.href = 'index.html';
 }

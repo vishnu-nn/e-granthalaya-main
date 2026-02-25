@@ -979,10 +979,13 @@ async function confirmDeleteBook() {
         };
         delete deletedBook.id; // Remove id so it gets auto-generated in deletedBooks store
 
-        // Add to deleted books store
+        // Add to deleted books store locally
         await window.dbModule.dbAdd('deletedBooks', deletedBook);
 
         // Delete from active books
+        if (window.API && window.API.deleteBook) {
+            await window.API.deleteBook(bookToDelete);
+        }
         await window.dbModule.dbDelete('books', bookToDelete);
 
         closeDeleteModal();
@@ -1528,18 +1531,18 @@ async function viewBookDetails(bookId) {
 
 // ===== Cross-Tab Synchronization =====
 // Listen for book list updates from other tabs (e.g., when admin adds a book)
-window.addEventListener('storage', async function(e) {
+window.addEventListener('storage', async function (e) {
     if (e.key === 'bookListUpdated') {
         console.log('Book list updated in another tab, refreshing...');
-        
+
         // Check if we're on a student or admin dashboard
         const isAdmin = typeof isAdminLoggedIn === 'function' && isAdminLoggedIn();
         const isStudent = typeof isStudentLoggedIn === 'function' && isStudentLoggedIn();
-        
+
         if (isStudent || isAdmin) {
             // Reload the books grid
             await loadBooksGrid(isAdmin);
-            
+
             // Show notification to user
             const notification = document.createElement('div');
             notification.style.cssText = 'position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 10px; color: white; font-weight: 500; z-index: 9999; background: linear-gradient(135deg, #667eea, #764ba2);';
