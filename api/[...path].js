@@ -16,10 +16,16 @@ async function getBody(req) {
     });
 }
 
+// Get next ID for an array
+function getNextId(arr) {
+    if (arr.length === 0) return 1;
+    return Math.max(...arr.map(item => item.id)) + 1;
+}
+
 export default async function handler(req, res) {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (req.method === 'OPTIONS') {
@@ -29,16 +35,7 @@ export default async function handler(req, res) {
     // In-memory storage (persists across requests in same instance)
     if (!global.db) {
         global.db = {
-            books: [
-                { id: 1, title: "E-Granthalaya User Manual", author: "System Admin", department: "computer-science", description: "Official user guide" },
-                { id: 2, title: "Introduction to Programming", author: "Library Collection", department: "computer-science", description: "Programming basics" },
-                { id: 3, title: "Data Structures Guide", author: "Library Collection", department: "computer-science", description: "Data structures fundamentals" },
-                { id: 4, title: "Python Programming Basics", author: "Library Collection", department: "computer-science", description: "Learn Python from scratch" },
-                { id: 5, title: "Programming With 'C'", author: "Gottfried", department: "computer-science", description: "C programming textbook" },
-                { id: 6, title: "Thermal Engineering", author: "P.L. Ballaney", department: "mechanical", description: "Thermal engineering guide" },
-                { id: 7, title: "Theory of Machines", author: "R.S. Khurmi", department: "mechanical", description: "Machine theory" },
-                { id: 8, title: "Mine Environment", author: "G.B. Misra", department: "mining", description: "Mining safety and environment" }
-            ],
+            books: [],
             students: [],
             borrowingHistory: [],
             adminPassword: '112233',
@@ -60,15 +57,33 @@ export default async function handler(req, res) {
     if (pathname === '/api/books' && req.method === 'POST') {
         const body = await getBody(req);
         const newBook = {
-            id: global.db.books.length + 1,
+            id: getNextId(global.db.books),
             title: body.title,
             author: body.author,
             department: body.department,
             description: body.description || '',
-            addedAt: new Date().toISOString()
+            image: body.image || null,
+            fileName: body.fileName || null,
+            fileSize: body.fileSize || 0,
+            fileType: body.fileType || 'application/pdf',
+            fileData: body.fileData || null,
+            addedAt: body.addedAt || new Date().toISOString(),
+            addedBy: body.addedBy || 'admin'
         };
         global.db.books.push(newBook);
-        return res.status(200).json({ success: true, bookId: newBook.id });
+        return res.status(200).json({ success: true, bookId: newBook.id, message: 'Book added successfully' });
+    }
+
+    // DELETE /api/books/:id
+    if (pathname.startsWith('/api/books/') && req.method === 'DELETE') {
+        const id = parseInt(pathname.split('/')[3], 10);
+        const bookIndex = global.db.books.findIndex(b => b.id === id);
+        if (bookIndex !== -1) {
+            global.db.books.splice(bookIndex, 1);
+            console.log(`📚 Book deleted: id=${id}`);
+            return res.status(200).json({ success: true, message: 'Book deleted successfully' });
+        }
+        return res.status(404).json({ success: false, message: 'Book not found' });
     }
 
     // POST /api/auth/admin/login
@@ -95,13 +110,15 @@ export default async function handler(req, res) {
         }
 
         const student = {
-            id: global.db.students.length + 1,
+            id: getNextId(global.db.students),
             studentId: body.studentId,
             name: body.name,
             email: body.email,
             password: body.password,
             department: body.department,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            lastLogin: null,
+            loginHistory: []
         };
         global.db.students.push(student);
         return res.status(200).json({ success: true, message: 'Student registered successfully' });
@@ -116,6 +133,11 @@ export default async function handler(req, res) {
 
         if (student) {
             const sessionId = Math.random().toString(36).substring(7);
+            const loginTime = new Date().toISOString();
+            student.lastLogin = loginTime;
+            if (!student.loginHistory) student.loginHistory = [];
+            student.loginHistory.push(loginTime);
+
             global.db.sessions[sessionId] = {
                 type: 'student',
                 studentId: student.studentId,
@@ -146,8 +168,13 @@ export default async function handler(req, res) {
             return res.status(404).json({ success: false, message: 'Book not found' });
         }
 
+        const alreadyBorrowed = global.db.borrowingHistory.find(h => h.bookId === body.bookId && h.status === 'active');
+        if (alreadyBorrowed) {
+            return res.status(400).json({ success: false, message: 'Book already borrowed' });
+        }
+
         const record = {
-            id: global.db.borrowingHistory.length + 1,
+            id: getNextId(global.db.borrowingHistory),
             bookId: body.bookId,
             bookTitle: book.title,
             studentId: body.studentId,
@@ -163,6 +190,21 @@ export default async function handler(req, res) {
     // GET /api/borrow/all
     if (pathname === '/api/borrow/all' && req.method === 'GET') {
         return res.status(200).json({ success: true, data: global.db.borrowingHistory });
+    }
+
+    // GET /api/students
+    if (pathname === '/api/students' && req.method === 'GET') {
+        // Return students without passwords
+        const safeStudents = global.db.students.map(s => ({
+            id: s.id,
+            studentId: s.studentId,
+            name: s.name,
+            email: s.email,
+            department: s.department,
+            lastLogin: s.lastLogin,
+            createdAt: s.createdAt
+        }));
+        return res.status(200).json({ success: true, data: safeStudents });
     }
 
     return res.status(404).json({ error: 'Not found', path: pathname });

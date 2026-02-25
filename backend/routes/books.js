@@ -16,5 +16,6 @@ router.post('/', upload.single('file'), bookController.addBook);
 router.put('/:id', bookController.updateBook);
 router.delete('/:id', bookController.deleteBook);
 router.post('/:id/restore', bookController.restoreBook);
+router.delete('/:id/permanent', bookController.permanentDeleteBook);
 
 module.exports = router;

@@ -84,6 +84,12 @@ class Book {
         return stmt.run(id);
     }
 
+    // Permanently delete a book (hard delete from database)
+    static permanentDelete(id) {
+        const stmt = db.prepare('DELETE FROM books WHERE id = ? AND deleted = 1');
+        return stmt.run(id);
+    }
+
     // Check if book is borrowed
     static isBorrowed(id) {
         const record = db.prepare(`

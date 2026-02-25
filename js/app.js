@@ -946,7 +946,7 @@ function closeDeleteModal() {
     bookToDelete = null;
 }
 
-// Confirm delete book - moves to deleted books instead of permanent delete
+// Confirm delete book - soft deletes on server (moves to deleted books)
 async function confirmDeleteBook() {
     if (!bookToDelete) {
         closeDeleteModal();
@@ -963,34 +963,13 @@ async function confirmDeleteBook() {
 
         const bookTitle = book.title;
 
-        // Check if book is borrowed and clean up borrowing records
-        const isBorrowed = await isBookBorrowed(bookToDelete);
-        if (isBorrowed) {
-            // Get all borrowing history and remove records for this book
-            const history = await getBorrowingHistory();
-            const bookRecords = history.filter(r => r.bookId === bookToDelete);
-
-            for (const record of bookRecords) {
-                await window.dbModule.dbDelete('borrowingHistory', record.id);
-            }
+        // Soft delete on server (sets deleted = 1)
+        const result = await window.API.deleteBook(bookToDelete);
+        if (!result.success) {
+            closeDeleteModal();
+            showNotification(result.message || 'Failed to delete book.', 'error');
+            return;
         }
-
-        // Create a copy for deleted books store
-        const deletedBook = {
-            ...book,
-            originalId: book.id,
-            deletedAt: new Date().toISOString()
-        };
-        delete deletedBook.id; // Remove id so it gets auto-generated in deletedBooks store
-
-        // Add to deleted books store locally
-        await window.dbModule.dbAdd('deletedBooks', deletedBook);
-
-        // Delete from active books
-        if (window.API && window.API.deleteBook) {
-            await window.API.deleteBook(bookToDelete);
-        }
-        await window.dbModule.dbDelete('books', bookToDelete);
 
         closeDeleteModal();
 
@@ -1012,10 +991,10 @@ async function confirmDeleteBook() {
 
 // ===== Deleted Books Functionality =====
 
-// Get all deleted books
+// Get all deleted books from server
 async function getDeletedBooks() {
     try {
-        return await window.dbModule.dbGetAll('deletedBooks');
+        return await window.API.getDeletedBooks();
     } catch (error) {
         console.error('Error getting deleted books:', error);
         return [];
@@ -1048,7 +1027,7 @@ async function loadDeletedBooks() {
 
         // Sort by deletion date (newest first)
         const sortedBooks = [...deletedBooks].sort((a, b) =>
-            new Date(b.deletedAt) - new Date(a.deletedAt)
+            new Date(b.deleted_at || b.deletedAt) - new Date(a.deleted_at || a.deletedAt)
         );
 
         grid.innerHTML = sortedBooks.map(book => {
@@ -1060,7 +1039,7 @@ async function loadDeletedBooks() {
                 `<img src="${book.image}" alt="${book.title}" class="book-cover-image" onerror="this.onerror=null;this.src='https://via.placeholder.com/120x180?text=No+Cover';">` :
                 `<div class="book-icon">📖</div>`;
 
-            const deletedDate = book.deletedAt ? formatDate(book.deletedAt) : 'Unknown';
+            const deletedDate = (book.deleted_at || book.deletedAt) ? formatDate(book.deleted_at || book.deletedAt) : 'Unknown';
 
             return `
                 <div class="deleted-book-card">
@@ -1091,38 +1070,15 @@ async function loadDeletedBooks() {
     }
 }
 
-// Restore a deleted book
+// Restore a deleted book via server API
 async function restoreBook(deletedBookId) {
     try {
-        // Get the deleted book
-        const deletedBook = await window.dbModule.dbGet('deletedBooks', deletedBookId);
+        const result = await window.API.restoreBook(deletedBookId);
 
-        if (!deletedBook) {
-            showNotification('Book not found in deleted books.', 'error');
+        if (!result.success) {
+            showNotification(result.message || 'Failed to restore book.', 'error');
             return;
         }
-
-        const bookTitle = deletedBook.title;
-
-        // Create book object for active books store
-        const restoredBook = {
-            title: deletedBook.title,
-            author: deletedBook.author,
-            department: deletedBook.department,
-            image: deletedBook.image || '',
-            fileName: deletedBook.fileName || '',
-            fileSize: deletedBook.fileSize || 0,
-            fileType: deletedBook.fileType || '',
-            fileData: deletedBook.fileData || '',
-            addedAt: new Date().toISOString(),
-            restoredAt: new Date().toISOString()
-        };
-
-        // Add to active books
-        await window.dbModule.dbAdd('books', restoredBook);
-
-        // Remove from deleted books
-        await window.dbModule.dbDelete('deletedBooks', deletedBookId);
 
         // Refresh grids
         await loadBooksGrid(true);
@@ -1130,7 +1086,7 @@ async function restoreBook(deletedBookId) {
         await loadDeletedBooks();
 
         // Show success notification
-        showNotification(`"${bookTitle}" has been restored to the library!`, 'success');
+        showNotification('Book has been restored to the library!', 'success');
 
     } catch (error) {
         console.error('Error restoring book:', error);
@@ -1138,24 +1094,25 @@ async function restoreBook(deletedBookId) {
     }
 }
 
-// Permanently delete a book
+// Permanently delete a book via server API
 async function permanentDeleteBook(deletedBookId) {
     if (!confirm('Are you sure you want to permanently delete this book? This action cannot be undone.')) {
         return;
     }
 
     try {
-        const deletedBook = await window.dbModule.dbGet('deletedBooks', deletedBookId);
-        const bookTitle = deletedBook ? deletedBook.title : 'Book';
+        const result = await window.API.permanentDeleteBook(deletedBookId);
 
-        // Remove from deleted books permanently
-        await window.dbModule.dbDelete('deletedBooks', deletedBookId);
+        if (!result.success) {
+            showNotification(result.message || 'Failed to permanently delete book.', 'error');
+            return;
+        }
 
         // Refresh the deleted books grid
         await loadDeletedBooks();
 
         // Show notification
-        showNotification(`"${bookTitle}" has been permanently deleted.`, 'success');
+        showNotification('Book has been permanently deleted.', 'success');
 
     } catch (error) {
         console.error('Error permanently deleting book:', error);

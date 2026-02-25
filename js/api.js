@@ -72,6 +72,43 @@ const API = {
         }
     },
 
+    async getDeletedBooks() {
+        try {
+            const response = await fetch(`${API_BASE}/books/deleted/all`);
+            const data = await response.json();
+            return data.success ? data.data : [];
+        } catch (error) {
+            console.error('Error fetching deleted books:', error);
+            return [];
+        }
+    },
+
+    async restoreBook(bookId) {
+        try {
+            const response = await fetch(`${API_BASE}/books/${bookId}/restore`, {
+                method: 'POST'
+            });
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error restoring book:', error);
+            return { success: false, message: 'Failed to restore book' };
+        }
+    },
+
+    async permanentDeleteBook(bookId) {
+        try {
+            const response = await fetch(`${API_BASE}/books/${bookId}/permanent`, {
+                method: 'DELETE'
+            });
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error permanently deleting book:', error);
+            return { success: false, message: 'Failed to permanently delete book' };
+        }
+    },
+
     // ===== Authentication =====
     async adminLogin(password) {
         try {

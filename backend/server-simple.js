@@ -172,17 +172,26 @@ const server = http.createServer((req, res) => {
 
     // API Routes
 
-    // GET /api/books - Get all books
+    // GET /api/books - Get all books (excluding deleted)
     if (url === '/api/books' && method === 'GET') {
-        sendJSON(res, 200, { success: true, data: db.books });
+        const activeBooks = db.books.filter(b => !b.deleted);
+        sendJSON(res, 200, { success: true, data: activeBooks });
+        return;
+    }
+
+    // GET /api/books/deleted/all - Get all deleted books
+    if (url === '/api/books/deleted/all' && method === 'GET') {
+        const deletedBooks = db.books.filter(b => b.deleted === true);
+        sendJSON(res, 200, { success: true, data: deletedBooks });
         return;
     }
 
     // POST /api/books - Add book with all fields including file data
     if (url === '/api/books' && method === 'POST') {
         parseBody(req, (err, body) => {
+            const maxId = db.books.reduce((max, b) => Math.max(max, b.id || 0), 0);
             const newBook = {
-                id: db.books.length + 1,
+                id: maxId + 1,
                 title: body.title,
                 author: body.author,
                 department: body.department,
@@ -193,7 +202,9 @@ const server = http.createServer((req, res) => {
                 fileType: body.fileType || 'application/pdf',
                 fileData: body.fileData || null,
                 addedAt: body.addedAt || new Date().toISOString(),
-                addedBy: body.addedBy || 'admin'
+                addedBy: body.addedBy || 'admin',
+                deleted: false,
+                deleted_at: null
             };
             db.books.push(newBook);
             saveBooksDatabase();
@@ -203,15 +214,47 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    // DELETE /api/books/:id - Delete book
-    if (url.startsWith('/api/books/') && method === 'DELETE') {
+    // POST /api/books/:id/restore - Restore a soft-deleted book
+    if (url.match(/^\/api\/books\/\d+\/restore$/) && method === 'POST') {
         const id = parseInt(url.split('/')[3], 10);
-        const bookIndex = db.books.findIndex(b => b.id === id);
-        if (bookIndex !== -1) {
-            const deletedBook = db.books.splice(bookIndex, 1)[0];
+        const book = db.books.find(b => b.id === id && b.deleted === true);
+        if (book) {
+            book.deleted = false;
+            book.deleted_at = null;
             saveBooksDatabase();
-            console.log(`📚 Book deleted from books.json: ${deletedBook.title}`);
-            sendJSON(res, 200, { success: true, message: 'Book deleted from database' });
+            console.log(`♻️ Book restored: ${book.title}`);
+            sendJSON(res, 200, { success: true, message: 'Book restored successfully' });
+        } else {
+            sendJSON(res, 404, { success: false, message: 'Book not found in deleted books' });
+        }
+        return;
+    }
+
+    // DELETE /api/books/:id/permanent - Permanently delete a book (hard delete)
+    if (url.match(/^\/api\/books\/\d+\/permanent$/) && method === 'DELETE') {
+        const id = parseInt(url.split('/')[3], 10);
+        const bookIndex = db.books.findIndex(b => b.id === id && b.deleted === true);
+        if (bookIndex !== -1) {
+            const removedBook = db.books.splice(bookIndex, 1)[0];
+            saveBooksDatabase();
+            console.log(`🗑️ Book permanently deleted: ${removedBook.title}`);
+            sendJSON(res, 200, { success: true, message: 'Book permanently deleted' });
+        } else {
+            sendJSON(res, 404, { success: false, message: 'Book not found in deleted books' });
+        }
+        return;
+    }
+
+    // DELETE /api/books/:id - Soft delete book (mark as deleted)
+    if (url.match(/^\/api\/books\/\d+$/) && method === 'DELETE') {
+        const id = parseInt(url.split('/')[3], 10);
+        const book = db.books.find(b => b.id === id && !b.deleted);
+        if (book) {
+            book.deleted = true;
+            book.deleted_at = new Date().toISOString();
+            saveBooksDatabase();
+            console.log(`📚 Book soft-deleted: ${book.title}`);
+            sendJSON(res, 200, { success: true, message: 'Book deleted successfully' });
         } else {
             sendJSON(res, 404, { success: false, message: 'Book not found' });
         }

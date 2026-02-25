@@ -127,6 +127,20 @@ exports.restoreBook = (req, res) => {
     }
 };
 
+// Permanently delete a book (hard delete)
+exports.permanentDeleteBook = (req, res) => {
+    try {
+        const result = Book.permanentDelete(req.params.id);
+        if (result.changes === 0) {
+            return res.status(404).json({ success: false, message: 'Book not found in deleted books' });
+        }
+        res.json({ success: true, message: 'Book permanently deleted' });
+    } catch (error) {
+        console.error('Permanent delete book error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
 // Download book PDF
 exports.downloadBook = (req, res) => {
     try {
